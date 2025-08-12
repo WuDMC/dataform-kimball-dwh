@@ -1,0 +1,57 @@
+config {
+    type: "table",
+    name: "dim_date",
+    uniqueKey: ["date_id"],
+    description: "Date dimension for time-based analysis. Includes year, quarter, month, weekday, etc."
+}
+
+  -- Generate dim_date table with 20 years of data
+WITH
+  min_date AS (
+  SELECT
+    MIN(pickup_datetime) AS min_ts
+  FROM
+    ${ref('l1_clean_trips')} ),
+  date_range AS (
+  SELECT
+    DATE_ADD(CAST(min_ts AS DATE), INTERVAL day_num DAY) AS date
+  FROM
+    min_date,
+    UNNEST(GENERATE_ARRAY(0, 365 * 20)) AS day_num )
+SELECT
+  date,
+  CAST(FORMAT_DATE('%Y%m%d', date) AS INT64) AS date_id,
+  EXTRACT(YEAR
+  FROM
+    date) AS year,
+  FORMAT_DATE('%Y-%m', date) AS year_month,
+  EXTRACT(QUARTER
+  FROM
+    date) AS quarter,
+  EXTRACT(MONTH
+  FROM
+    date) AS month,
+  FORMAT_DATE('%B', date) AS month_name,
+  FORMAT_DATE('%b', date) AS month_short,
+  EXTRACT(DAY
+  FROM
+    date) AS day,
+  EXTRACT(DAYOFWEEK
+  FROM
+    date) AS day_of_week_number,
+  FORMAT_DATE('%A', date) AS day_of_week_name,
+  EXTRACT(WEEK
+  FROM
+    date) AS week_of_year,
+  CASE
+    WHEN EXTRACT(DAYOFWEEK FROM date) IN (1, 7) THEN TRUE
+    ELSE FALSE
+END
+  AS is_weekend,
+  bigfunctions.us.is_public_holiday(CAST(date AS DATE),
+    "US") AS is_holiday,
+  CURRENT_DATE() = date AS is_today,
+  CURRENT_DATE() >= date AS is_past,
+  CURRENT_DATE() < date AS is_future
+FROM
+  date_range

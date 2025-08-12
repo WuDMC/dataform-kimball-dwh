@@ -1,0 +1,24 @@
+config {
+    type: "view",
+    name: "fact_trips",
+}
+
+SELECT
+  vendor_id,
+  passenger_count,
+  trip_distance,
+  fare_amount,
+  extra,
+  mta_tax,
+  tip_amount,
+  tolls_amount,
+  imp_surcharge,
+  airport_fee,
+  total_amount,
+  pickup_datetime,
+  pickup_date_id,
+  dropoff_datetime,
+  dropoff_date_id,
+  payment_id
+FROM
+  ${ref('l1_clean_trips')}

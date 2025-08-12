@@ -1,0 +1,65 @@
+config {
+    type: "table",
+    schema: "taxi_marts",
+    name: "example",
+}
+
+WITH
+  dim_date_pickup AS (
+  SELECT
+    dim_date.date_id AS pickup_date_id,
+    dim_date.year AS pickup_year,
+    dim_date.month AS pickup_month,
+    dim_date.day_of_week_name AS pickup_day
+  FROM
+    ${ref('dim_date')} dim_date ),
+  dim_date_dropoff AS (
+  SELECT
+    dim_date.date_id AS dropoff_date_id,
+    dim_date.year AS dropoff_year,
+    dim_date.month AS dropoff_month,
+    dim_date.day_of_week_name AS dropoff_day
+  FROM
+    ${ref('dim_date')} dim_date )
+SELECT
+  passenger_count,
+  trip_distance,
+  fare_amount,
+  extra,
+  mta_tax,
+  tip_amount,
+  tolls_amount,
+  imp_surcharge,
+  airport_fee,
+  total_amount,
+  fact_trips.pickup_date_id,
+  dim_date_pickup.pickup_year,
+  dim_date_pickup.pickup_month,
+  dim_date_pickup.pickup_day,
+  fact_trips.dropoff_datetime,
+  dim_date_dropoff.dropoff_date_id,
+  dim_date_dropoff.dropoff_year,
+  dim_date_dropoff.dropoff_month,
+  dim_date_dropoff.dropoff_day,
+  fact_trips.vendor_id,
+  dim_vendor.vendor_name,
+  fact_trips.payment_id,
+  dim_payment.payment_detail
+FROM
+  ${ref('fact_trips')} AS fact_trips
+LEFT JOIN
+  dim_date_pickup
+USING
+  (pickup_date_id)
+LEFT JOIN
+  dim_date_dropoff
+USING
+  (dropoff_date_id)
+LEFT JOIN
+  ${ref('dim_payment')} AS dim_payment
+ON
+  fact_trips.payment_id = dim_payment.payment_id
+LEFT JOIN
+  ${ref('dim_vendor')} AS dim_vendor
+ON
+  fact_trips.vendor_id = dim_vendor.vendor_id

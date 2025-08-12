@@ -1,5 +1,5 @@
 defaultProject: dataform-kimball-dwh
 defaultLocation: US
-defaultDataset: dataform
-defaultAssertionDataset: dataform_assertions
+defaultDataset: kimball_dwh_taxi
+defaultAssertionDataset: kimball_dwh_taxi_assertions
 dataformCoreVersion: 3.0.0
