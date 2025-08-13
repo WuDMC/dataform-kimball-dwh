@@ -9,16 +9,16 @@ WITH
   SELECT
     dim_date.date_id AS pickup_date_id,
     dim_date.year AS pickup_year,
-    dim_date.month AS pickup_month,
-    dim_date.day_of_week_name AS pickup_day
+    dim_date.month_name AS pickup_month,
+    dim_date.day_of_week AS pickup_day
   FROM
     ${ref('dim_date')} dim_date ),
   dim_date_dropoff AS (
   SELECT
     dim_date.date_id AS dropoff_date_id,
     dim_date.year AS dropoff_year,
-    dim_date.month AS dropoff_month,
-    dim_date.day_of_week_name AS dropoff_day
+    dim_date.month_name AS dropoff_month,
+    dim_date.day_of_week AS dropoff_day
   FROM
     ${ref('dim_date')} dim_date )
 SELECT
