@@ -1,6 +1,6 @@
-const ARCHIVE_VENDOR_ID = 2
+const NO_DATA = 'unspecified'
 
 
 module.exports = {
-    ARCHIVE_VENDOR_ID,
+    NO_DATA,
 }
