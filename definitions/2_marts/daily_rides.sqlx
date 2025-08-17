@@ -1,0 +1,36 @@
+config {
+    type: "table",
+    schema: "taxi_marts",
+    name: "daily_rides",
+}
+
+WITH
+  calendar AS (
+  SELECT
+    dim_date.date,
+    dim_date.date_id,
+    dim_date.year,
+    dim_date.month_name,
+    dim_date.day_of_week,
+    dim_date.is_holiday,
+  FROM
+    ${ref('dim_date')} dim_date ),
+  agg_rides AS (
+  SELECT
+    pickup_date_id as date_id,
+    vendor_id,
+    coalesce(SUM(pickup_date_id),0) AS rides,
+    coalesce(SUM(total_amount),0) as total_amount,
+    coalesce(SUM(passenger_count),0) as passenger_count,
+    SUM(if(isNonFraudRide, 1, 0)) as fraud_rides
+  FROM
+    ${ref("kimball_dwh_taxi","fact_trips")}
+  GROUP BY
+    1,
+    2 )
+SELECT
+  *
+FROM
+  calendar
+LEFT JOIN agg_rides USING(date_id)
+order by rides desc

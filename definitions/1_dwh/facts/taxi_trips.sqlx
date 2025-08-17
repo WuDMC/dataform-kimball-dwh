@@ -1,6 +1,11 @@
 config {
     type: "view",
-    name: "fact_trips",
+    name: "fact_trips"
+}
+js {
+    const {
+        isNonFraudRide,
+    } = require("/includes/indicators.js");
 }
 
 SELECT
@@ -19,6 +24,7 @@ SELECT
   pickup_date_id,
   dropoff_datetime,
   dropoff_date_id,
-  payment_id
+  payment_id,
+  ${isNonFraudRide} as isNonFraudRide
 FROM
   ${ref('l1_clean_trips')}

@@ -46,7 +46,7 @@ SELECT
   fact_trips.payment_id,
   dim_payment.payment_detail
 FROM
-  ${ref('fact_trips')} AS fact_trips
+  ${ref("kimball_dwh_taxi", "fact_trips")} AS fact_trips
 LEFT JOIN
   dim_date_pickup
 USING

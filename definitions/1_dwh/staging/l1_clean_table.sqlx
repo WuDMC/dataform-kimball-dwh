@@ -1,6 +1,18 @@
 config {
     type: "table",
     name: "l1_clean_trips",
+    assertions: {
+        nonNull: ["vendor_id"],
+        rowConditions: [
+            'pickup_datetime is not null and pickup_datetime < dropoff_datetime',
+        ]
+    }
+}
+
+js {
+    const {
+        fix_dropoff_time,
+    } = require("/includes/query_helpers.js");
 }
 
 SELECT
