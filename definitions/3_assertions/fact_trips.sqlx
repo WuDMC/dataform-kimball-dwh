@@ -1,0 +1,11 @@
+config {
+    type: "assertion"
+}
+
+SELECT
+  'not null vendor id' AS failing_condition,
+  *
+FROM
+  ${ref("kimball_dwh_taxi","fact_trips")}
+WHERE
+  vendor_id IS NULL

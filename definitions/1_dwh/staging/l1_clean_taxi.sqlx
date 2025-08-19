@@ -1,0 +1,38 @@
+config {
+    type: "table",
+    name: "l1_clean_taxi",
+    assertions: {
+        nonNull: ["vendor_id"],
+        rowConditions: [
+            'pickup_datetime is not null and pickup_datetime <= dropoff_datetime',
+        ]
+    }
+}
+
+js {
+    const {
+        fix_dropoff_time,
+    } = require("/includes/query_helpers.js");
+}
+
+SELECT
+  CAST(vendor_id AS INT64) AS vendor_id,
+  passenger_count,
+  trip_distance,
+  fare_amount,
+  extra,
+  mta_tax,
+  tip_amount,
+  tolls_amount,
+  imp_surcharge,
+  airport_fee,
+  total_amount,
+  pickup_datetime,
+  CAST(FORMAT_DATE('%Y%m%d', pickup_datetime) AS INT64) AS pickup_date_id,
+  ${fix_dropoff_time()} as dropoff_datetime,
+  CAST(FORMAT_DATE('%Y%m%d', ${fix_dropoff_time()}) AS INT64) AS dropoff_date_id,
+  CAST(payment_type AS INT) AS payment_id
+FROM
+  ${ref('tlc_yellow_trips_2020')}
+TABLESAMPLE
+  SYSTEM (1 PERCENT)
